@@ -1,0 +1,60 @@
+const CACHE = 'simran-shell-v2';
+
+self.addEventListener('install', e => {
+  e.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    await cache.addAll([
+      '/',
+      '/index.html',
+      '/assets/therapy.png',
+      '/assets/clinic-icon.svg'
+    ]);
+    await self.skipWaiting();
+  })());
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil((async () => {
+    for (const k of await caches.keys()) {
+      if (k !== CACHE) await caches.delete(k);
+    }
+    await self.clients.claim();
+  })());
+});
+
+self.addEventListener('message', e => {
+  if (e.data?.type === 'CACHE_SHELL') {
+    e.waitUntil((async () => {
+      try {
+        const cache = await caches.open(CACHE);
+        await cache.addAll(
+          e.data.urls.filter(u => {
+            const url = new URL(u);
+            return url.origin === location.origin;
+          })
+        );
+        e.ports[0]?.postMessage(true);
+      } catch {
+        e.ports[0]?.postMessage(false);
+      }
+    })());
+  }
+});
+
+self.addEventListener('fetch', e => {
+  const u = new URL(e.request.url);
+  if (e.request.method !== 'GET' || u.origin !== location.origin) return;
+
+  e.respondWith((async () => {
+    const cache = await caches.open(CACHE);
+    try {
+      const r = await fetch(e.request);
+      if (r.ok) await cache.put(e.request.mode === 'navigate' ? '/' : e.request, r.clone());
+      return r;
+    } catch {
+      const r = await cache.match(e.request.mode === 'navigate' ? '/' : e.request);
+      return r || Response.error();
+    }
+  })());
+});
+
