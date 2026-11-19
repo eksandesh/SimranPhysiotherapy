@@ -1,0 +1,78 @@
+<form (ngSubmit)="submit()">
+  <div class="fields">
+    <label>
+      Full name
+      <input
+        name="name"
+        [(ngModel)]="name"
+        autoFocus
+        required
+        maxlength="100"
+      />
+    </label>
+
+    <div class="pair">
+      <label>
+        Age
+        <input
+          type="number"
+          name="age"
+          min="0"
+          max="125"
+          required
+          [(ngModel)]="age"
+        />
+      </label>
+      <label>
+        Gender
+        <select name="gender" [(ngModel)]="gender">
+          <option value="Female">Female</option>
+          <option value="Male">Male</option>
+          <option value="Other">Other</option>
+          <option value="Not specified">Not specified</option>
+        </select>
+      </label>
+    </div>
+
+    <label>
+      Phone number
+      <input
+        name="phone"
+        type="tel"
+        maxlength="30"
+        [(ngModel)]="phone"
+      />
+    </label>
+
+    <label>
+      Condition
+      <input
+        name="condition"
+        required
+        maxlength="150"
+        [(ngModel)]="condition"
+      />
+    </label>
+
+    <label>
+      Care status
+      <select name="status" [(ngModel)]="status">
+        <option value="Active">Active</option>
+        <option value="Follow-up">Follow-up</option>
+        <option value="Recovered">Recovered</option>
+      </select>
+    </label>
+
+    <label>
+      Clinical notes
+      <textarea
+        name="notes"
+        rows="3"
+        [(ngModel)]="notes"
+      ></textarea>
+    </label>
+  </div>
+
+  <button class="primary formend" type="submit">Save patient</button>
+</form>
+

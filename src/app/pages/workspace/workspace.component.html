@@ -1,0 +1,235 @@
+<div class="workspace">
+  <!-- Mobile shade backdrop -->
+  <button
+    *ngIf="menuOpen"
+    aria-label="Close navigation"
+    class="shade"
+    (click)="menuOpen = false"
+  ></button>
+
+  <!-- Sidebar -->
+  <aside [class.sidebar]="true" [class.shown]="menuOpen">
+    <div class="brand">
+      <img src="assets/clinic-icon.svg" alt="Clinic logo" />
+      <div>
+        <b>Simran</b>
+        <span>Physiotherapy</span>
+      </div>
+    </div>
+
+    <div class="navblock">
+      <div class="eyebrow">WORKSPACE</div>
+      <nav>
+        <button
+          *ngFor="let item of navItems.slice(0, 6)"
+          [routerLink]="item.path"
+          routerLinkActive="page"
+          [routerLinkActiveOptions]="{ exact: false }"
+          (click)="menuOpen = false"
+        >
+          <app-icon [name]="item.icon" [size]="18"></app-icon>
+          {{ item.label }}
+        </button>
+      </nav>
+
+      <div class="divider"></div>
+
+      <div class="eyebrow">SYSTEM</div>
+      <nav>
+        <button
+          [routerLink]="navItems[6].path"
+          routerLinkActive="page"
+          [routerLinkActiveOptions]="{ exact: false }"
+          (click)="menuOpen = false"
+        >
+          <app-icon [name]="navItems[6].icon" [size]="18"></app-icon>
+          {{ navItems[6].label }}
+        </button>
+      </nav>
+    </div>
+
+    <div class="sidebottom">
+      <div class="device">
+        <span class="statusdot"></span> Local workspace
+      </div>
+      <div class="profile">
+        <span>DS</span>
+        <div>
+          <b>Dr. Simran</b>
+          <small>Clinic administrator</small>
+        </div>
+        <button
+          class="logout"
+          aria-label="Sign out"
+          title="Sign out"
+          (click)="logout()"
+        >
+          <app-icon name="LogOut" [size]="18"></app-icon>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Area with Routing Outlet -->
+  <main>
+    <header>
+      <div class="bread">
+        <button
+          class="mobilemenu"
+          aria-label="Open navigation"
+          (click)="menuOpen = true"
+        >
+          <app-icon name="Menu" [size]="20"></app-icon>
+        </button>
+        <app-icon name="PanelLeft" [size]="17" className="desktopicon"></app-icon>
+        <span class="crumbline"></span>
+        Workspace
+        <app-icon name="ChevronRight" [size]="13"></app-icon>
+        <b>{{ pageTitle }}</b>
+      </div>
+
+      <span class="headerdate">
+        <app-icon name="CalendarDays" [size]="15"></app-icon>
+        {{ currentDateFormatted }}
+      </span>
+    </header>
+
+    <div class="content">
+      <div class="pagetop">
+        <div>
+          <div class="eyebrow">CLINIC WORKSPACE</div>
+          <h1>{{ pageTitle }}</h1>
+        </div>
+
+        <button
+          *ngIf="clinic && currentTopAction"
+          class="primary"
+          (click)="triggerTopAction()"
+        >
+          <app-icon name="Plus" [size]="17"></app-icon>
+          {{ currentTopAction[1] }}
+        </button>
+      </div>
+
+      <!-- Router Outlet for Child Pages -->
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+  <!-- Global Toast notice -->
+  <div *ngIf="notice" role="status" class="toast">
+    {{ notice }}
+  </div>
+
+  <!-- Central Modal Dialog Host -->
+  <app-dialog
+    *ngIf="clinic && dialogState.mode"
+    [title]="modalTitle"
+    [wide]="isWideModal"
+    (close)="closeModal()"
+  >
+    <!-- Add / Edit Patient -->
+    <app-patient-form
+      *ngIf="dialogState.mode === 'add' || dialogState.mode === 'edit'"
+      [patient]="dialogState.mode === 'edit' ? dialogState.patient : undefined"
+      (commit)="onSavePatient($event)"
+    ></app-patient-form>
+
+    <!-- Book / Edit Appointment -->
+    <ng-container *ngIf="dialogState.mode === 'book'">
+      <div *ngIf="clinic.patients.length === 0">
+        <p>Add a patient before booking an appointment.</p>
+        <button class="primary" (click)="openAddPatient()">Add patient</button>
+      </div>
+      <app-visit-form
+        *ngIf="clinic.patients.length > 0"
+        [clinic]="clinic"
+        [visitData]="dialogState.visit"
+        [fixedPatientId]="dialogState.back === 'view' ? dialogState.patient?.id : ''"
+        (commit)="onSaveVisit($event)"
+        (deleteVisit)="onRemoveVisit($event)"
+      ></app-visit-form>
+    </ng-container>
+
+    <!-- Add / Edit Package -->
+    <app-package-form
+      *ngIf="dialogState.mode === 'pkg'"
+      [packageData]="dialogState.pkg"
+      (commit)="onSavePackage($event)"
+      (deletePackage)="onConfirmDeletePackage($event)"
+    ></app-package-form>
+
+    <!-- Record / Edit Payment -->
+    <ng-container *ngIf="dialogState.mode === 'pay'">
+      <div *ngIf="clinic.patients.length === 0">
+        <p>Add a patient before recording a payment.</p>
+      </div>
+      <app-payment-form
+        *ngIf="clinic.patients.length > 0"
+        [clinic]="clinic"
+        [paymentData]="dialogState.payment"
+        [fixedPatientId]="dialogState.back === 'view' ? dialogState.patient?.id : ''"
+        (commit)="onSavePayment($event)"
+        (deletePayment)="onConfirmDeletePayment($event)"
+        (printReceipt)="onPrintReceipt($event)"
+      ></app-payment-form>
+    </ng-container>
+
+    <!-- Assign Package to Patient -->
+    <app-assign-form
+      *ngIf="dialogState.mode === 'assign' && dialogState.patient"
+      [clinic]="clinic"
+      [patientId]="dialogState.patient.id"
+      (commit)="onAssignPackage($event)"
+      (goPackages)="goToPackagesFromModal()"
+    ></app-assign-form>
+
+    <!-- Confirmation Ask Dialog -->
+    <ng-container *ngIf="dialogState.mode === 'confirm' && dialogState.askConfirm">
+      <p>{{ dialogState.askConfirm.text }}</p>
+      <button class="primary danger" (click)="dialogState.askConfirm.run()">
+        {{ dialogState.askConfirm.label }}
+      </button>
+    </ng-container>
+
+    <!-- Patient Detail Record View -->
+    <app-patient-detail
+      *ngIf="dialogState.mode === 'view' && dialogState.patient"
+      [clinic]="clinic"
+      [patient]="dialogState.patient"
+      (assignPackage)="openAssignPackage()"
+      (editPayment)="onPatientViewPayment($event)"
+      (removePackage)="onConfirmRemoveAssigned($event)"
+      (editVisit)="onEditVisit($event, 'view')"
+      (bookSession)="openBookSession()"
+      (editPatient)="openEditPatient()"
+      (downloadReport)="onDownloadPatientReport()"
+    ></app-patient-detail>
+
+    <!-- Reset Workspace Dialog -->
+    <ng-container *ngIf="dialogState.mode === 'reset'">
+      <p>
+        All {{ clinic.patients.length }} patient records and
+        {{ clinic.visits.length }} appointments will be removed. Download a
+        backup first if you need to keep them.
+      </p>
+      <button class="primary" (click)="onClearWorkspace()">
+        Clear records and start fresh
+      </button>
+    </ng-container>
+
+    <!-- Restore Backup Confirmation Dialog -->
+    <ng-container *ngIf="dialogState.mode === 'restore' && dialogState.restoreCandidate">
+      <p>
+        Replace all current records with
+        {{ dialogState.restoreCandidate.patients.length }} patients,
+        {{ dialogState.restoreCandidate.visits.length }} appointments,
+        {{ dialogState.restoreCandidate.packages.length }} packages and
+        {{ dialogState.restoreCandidate.payments.length }} payments from the backup?
+      </p>
+      <button class="primary" (click)="onConfirmRestore()">
+        Replace and restore
+      </button>
+    </ng-container>
+  </app-dialog>
+</div>

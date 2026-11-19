@@ -1,0 +1,40 @@
+<section class="panel patientpanel" *ngIf="clinic">
+  <div class="panelhead">
+    <h2>Package master</h2>
+    <small>{{ clinic.packages.length }} package{{ clinic.packages.length === 1 ? '' : 's' }}</small>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Package name</th>
+          <th>Sessions</th>
+          <th>Cost per session</th>
+          <th>Package total</th>
+          <th>Sold</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let k of clinic.packages" (click)="pickPackage(k)">
+          <td><b>{{ k.name }}</b></td>
+          <td>{{ k.sessions }}</td>
+          <td>{{ formatMoney(k.rate) }}</td>
+          <td>{{ formatMoney(k.sessions * k.rate) }}</td>
+          <td>{{ getSoldCount(k.id) }}</td>
+          <td>
+            <span [class]="'badge ' + (k.active ? 'green' : 'blue')">
+              <i></i>{{ k.active ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="clinic.packages.length === 0" class="empty">
+    <app-icon name="Package" [size]="28"></app-icon>
+    <p>No packages yet. Add one to start selling session packs.</p>
+  </div>
+</section>

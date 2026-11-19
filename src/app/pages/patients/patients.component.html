@@ -1,0 +1,20 @@
+<div class="toolbar">
+  <label class="search">
+    <app-icon name="Search" [size]="17"></app-icon>
+    <input
+      aria-label="Search patient records"
+      placeholder="Search name, ID or condition"
+      [(ngModel)]="query"
+    />
+  </label>
+  <select aria-label="Filter patient status" [(ngModel)]="filter">
+    <option *ngFor="let opt of statusOptions" [value]="opt">{{ opt }}</option>
+  </select>
+</div>
+
+<app-patient-list
+  [clinic]="clinic"
+  [patients]="filteredPatients"
+  [showMore]="false"
+  (pick)="viewPatient($event)"
+></app-patient-list>

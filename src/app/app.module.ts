@@ -5,64 +5,37 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { IconComponent } from './components/icon/icon.component';
-import { BadgeComponent } from './components/badge/badge.component';
-import { DialogComponent } from './components/dialog/dialog.component';
-import { LoginComponent } from './components/login/login.component';
-import { WorkspaceComponent } from './components/workspace/workspace.component';
-import { OverviewComponent } from './components/overview/overview.component';
-import { PatientListComponent } from './components/patients/patient-list.component';
-import { PatientsPageComponent } from './components/patients/patients-page.component';
-import { AppointmentsPageComponent } from './components/appointments/appointments-page.component';
-import {
-  PackagesPageComponent,
-  PackageFormComponent
-} from './components/packages/packages.component';
-import {
-  PaymentsPageComponent,
-  PatientBillingComponent,
-  PaymentFormComponent,
-  AssignFormComponent
-} from './components/billing/billing.component';
-import {
-  PatientFormComponent,
-  VisitFormComponent,
-  PatientDetailComponent
-} from './components/dialog-forms/dialog-forms.component';
-import {
-  ReportsPageComponent,
-  BackupPageComponent
-} from './components/system-pages/system-pages.component';
+import { SharedModule } from './shared/shared.module';
+
+import { LoginComponent } from './pages/login/login.component';
+import { WorkspaceComponent } from './pages/workspace/workspace.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { PatientsComponent } from './pages/patients/patients.component';
+import { AppointmentsComponent } from './pages/appointments/appointments.component';
+import { PackagesComponent } from './pages/packages/packages.component';
+import { PaymentsComponent } from './pages/payments/payments.component';
+import { ReportsComponent } from './pages/reports/reports.component';
+import { BackupComponent } from './pages/backup/backup.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    IconComponent,
-    BadgeComponent,
-    DialogComponent,
     LoginComponent,
     WorkspaceComponent,
-    OverviewComponent,
-    PatientListComponent,
-    PatientsPageComponent,
-    AppointmentsPageComponent,
-    PackagesPageComponent,
-    PackageFormComponent,
-    PaymentsPageComponent,
-    PatientBillingComponent,
-    PaymentFormComponent,
-    AssignFormComponent,
-    PatientFormComponent,
-    VisitFormComponent,
-    PatientDetailComponent,
-    ReportsPageComponent,
-    BackupPageComponent
+    DashboardComponent,
+    PatientsComponent,
+    AppointmentsComponent,
+    PackagesComponent,
+    PaymentsComponent,
+    ReportsComponent,
+    BackupComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    AppRoutingModule,
+    SharedModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,0 +1,70 @@
+<form (ngSubmit)="submit()">
+  <div class="fields">
+    <label>
+      Package name
+      <input
+        name="name"
+        [(ngModel)]="name"
+        autoFocus
+        required
+        maxlength="80"
+        placeholder="e.g. 10-Session Pack"
+      />
+    </label>
+
+    <div class="pair">
+      <label>
+        No. of sessions
+        <input
+          name="sessions"
+          type="number"
+          min="1"
+          step="1"
+          required
+          [(ngModel)]="sessions"
+        />
+      </label>
+      <label>
+        Cost per session (₹)
+        <input
+          name="rate"
+          type="number"
+          min="0"
+          step="0.01"
+          required
+          [(ngModel)]="rate"
+        />
+      </label>
+    </div>
+
+    <div class="calc">
+      Package total <b>{{ formattedTotal }}</b>
+    </div>
+
+    <label>
+      Status
+      <select name="status" [(ngModel)]="status">
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+      </select>
+    </label>
+
+    <small *ngIf="packageData">
+      Changes apply to new sales only. Packages already assigned to patients keep their original sessions and price.
+    </small>
+  </div>
+
+  <div class="buttons formend">
+    <button class="primary" type="submit">Save package</button>
+    <button
+      *ngIf="packageData"
+      type="button"
+      class="secondary"
+      (click)="deletePackage.emit(packageData)"
+    >
+      <app-icon name="Trash2" [size]="15"></app-icon>
+      Delete
+    </button>
+  </div>
+</form>
+

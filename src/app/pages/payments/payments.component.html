@@ -1,0 +1,96 @@
+<div *ngIf="clinic">
+  <div class="statgrid">
+    <div class="stat" *ngFor="let s of stats">
+      <div class="statline">
+        <span>{{ s.label }}</span>
+      </div>
+      <strong>{{ formatMoney(s.amount) }}</strong>
+    </div>
+  </div>
+
+  <section class="panel patientpanel" style="margin-top: 18px;">
+    <div class="panelhead">
+      <h2>Payments received</h2>
+      <div class="filters">
+        <input
+          type="month"
+          aria-label="Filter by month"
+          [(ngModel)]="filterMonth"
+        />
+        <select aria-label="Filter by payment mode" [(ngModel)]="filterMode">
+          <option value="All modes">All modes</option>
+          <option *ngFor="let m of modes" [value]="m">{{ m }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Receipt</th>
+            <th>Date</th>
+            <th>Patient</th>
+            <th>Towards</th>
+            <th>Mode</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of filteredPayments" (click)="editPayment(p)">
+            <td>{{ p.id }}</td>
+            <td>{{ formatDate(p.date) }}</td>
+            <td><b>{{ getPatientName(p.patient) }}</b></td>
+            <td>{{ getTowardsText(p) }}</td>
+            <td>{{ p.mode }}</td>
+            <td><b>{{ formatMoney(p.amount) }}</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="filteredPayments.length === 0" class="empty">
+      <p>No payments found.</p>
+    </div>
+
+    <p *ngIf="filteredPayments.length > 0" class="tablefoot">
+      {{ filteredPayments.length }} payment{{ filteredPayments.length === 1 ? '' : 's' }} ·
+      {{ formatMoney(totalFilteredAmount) }}
+    </p>
+  </section>
+
+  <section class="panel patientpanel" style="margin-top: 18px;">
+    <div class="panelhead">
+      <h2>Pending dues</h2>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Billed</th>
+            <th>Received</th>
+            <th>Balance due</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of pendingDues" (click)="viewPatient(d.p)">
+            <td>
+              <b>{{ d.p.name }}</b>
+              <small>{{ d.p.id }}{{ d.p.phone ? ' · ' + d.p.phone : '' }}</small>
+            </td>
+            <td>{{ formatMoney(getBilled(d.p.id)) }}</td>
+            <td>{{ formatMoney(getReceived(d.p.id)) }}</td>
+            <td><b class="owe">{{ formatMoney(d.due) }}</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="pendingDues.length === 0" class="empty">
+      <app-icon name="UserRoundPlus" [size]="28"></app-icon>
+      <p>No pending dues.</p>
+    </div>
+  </section>
+</div>

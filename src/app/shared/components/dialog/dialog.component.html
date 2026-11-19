@@ -1,0 +1,12 @@
+<div class="dialog-backdrop" (click)="onBackdropClick($event)">
+  <div class="dialog-modal" [class.wide]="wide" (click)="$event.stopPropagation()">
+    <div class="dialoghead">
+      <h2>{{ title }}</h2>
+      <button aria-label="Close dialog" (click)="close.emit()">
+        <app-icon name="X" [size]="20"></app-icon>
+      </button>
+    </div>
+    <ng-content></ng-content>
+  </div>
+</div>
+

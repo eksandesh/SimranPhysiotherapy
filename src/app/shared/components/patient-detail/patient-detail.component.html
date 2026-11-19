@@ -1,0 +1,50 @@
+<div class="record" *ngIf="clinic && patient">
+  <div class="recname">
+    <div>
+      <small>{{ patient.id }}</small>
+      <h2>{{ patient.name }}</h2>
+    </div>
+    <app-badge [status]="patient.status"></app-badge>
+  </div>
+
+  <p>{{ patient.age }} years · {{ patient.gender }} · Registered {{ formatDate(patient.date) }}</p>
+
+  <h3>Condition</h3>
+  <p>{{ patient.condition }}</p>
+
+  <h3>Contact</h3>
+  <p>{{ patient.phone || 'No phone number recorded.' }}</p>
+
+  <h3>Clinical notes</h3>
+  <p class="notes">{{ patient.notes || 'No clinical notes recorded.' }}</p>
+
+  <app-patient-billing
+    [clinic]="clinic"
+    [patient]="patient"
+    (assignPackage)="assignPackage.emit()"
+    (editPayment)="editPayment.emit($event)"
+    (removePackage)="removePackage.emit($event)"
+  ></app-patient-billing>
+
+  <h3 class="gap">Appointment history</h3>
+  <button
+    class="history"
+    *ngFor="let v of patientVisits"
+    (click)="editVisit.emit(v)"
+  >
+    {{ formatDate(v.date) }} · {{ v.time }} · {{ v.status }}{{ getVisitPackageName(v) }}
+    <app-icon name="ChevronRight" [size]="14"></app-icon>
+  </button>
+
+  <p *ngIf="patientVisits.length === 0">No appointments recorded.</p>
+
+  <div class="buttons">
+    <button class="primary" (click)="bookSession.emit()">Book session</button>
+    <button class="secondary" (click)="editPatient.emit()">Edit patient</button>
+    <button class="secondary" (click)="downloadReport.emit()">
+      <app-icon name="Download" [size]="15"></app-icon>
+      Patient report
+    </button>
+  </div>
+</div>
+

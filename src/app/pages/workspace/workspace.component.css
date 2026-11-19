@@ -1,0 +1,5 @@
+/* Workspace layout styling */
+nav button.page {
+  background: var(--teal);
+  color: white;
+}

@@ -1,0 +1,70 @@
+<div *ngIf="clinic">
+  <div *ngIf="activePackages.length === 0">
+    <p>Create a package in the Packages page first, then assign it here.</p>
+    <button class="primary" (click)="goPackages.emit()">Go to Packages</button>
+  </div>
+
+  <form *ngIf="activePackages.length > 0" (ngSubmit)="submit()">
+    <div class="fields">
+      <label>
+        Package
+        <select name="pkgId" [(ngModel)]="pkgId" (ngModelChange)="onPackageChange($event)">
+          <option *ngFor="let k of activePackages" [value]="k.id">
+            {{ k.name }} · {{ k.sessions }} sessions
+          </option>
+        </select>
+      </label>
+
+      <div class="pair">
+        <label>
+          Cost per session (₹)
+          <input
+            name="rate"
+            type="number"
+            min="0"
+            step="0.01"
+            required
+            [(ngModel)]="rate"
+          />
+        </label>
+        <label>
+          Start date
+          <input
+            name="date"
+            type="date"
+            required
+            [(ngModel)]="date"
+          />
+        </label>
+      </div>
+
+      <div class="calc" *ngIf="selectedPackage">
+        {{ selectedPackage.sessions }} sessions × {{ formatMoney(numericRate) }} =
+        <b>{{ formatMoney(totalCost) }}</b>
+      </div>
+
+      <div class="pair">
+        <label>
+          Payment received now (₹)
+          <input
+            name="received"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Optional"
+            [(ngModel)]="receivedAmount"
+          />
+        </label>
+        <label>
+          Mode
+          <select name="mode" [(ngModel)]="mode">
+            <option *ngFor="let m of modes" [value]="m">{{ m }}</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <button class="primary formend" type="submit">Assign package</button>
+  </form>
+</div>
+

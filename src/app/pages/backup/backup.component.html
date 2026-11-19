@@ -1,0 +1,67 @@
+<div class="backupgrid" *ngIf="clinic">
+  <!-- Device backup -->
+  <section class="panel toolpanel">
+    <span class="iconbox tint0">
+      <app-icon name="HardDrive" [size]="20"></app-icon>
+    </span>
+    <h2>Device backup</h2>
+    <p>
+      Save a complete copy of patient records, clinical notes, appointments,
+      packages and payments. Backups contain private patient information;
+      store them securely.
+    </p>
+    <button class="primary" (click)="onDownloadBackup()">
+      <app-icon name="Download" [size]="16"></app-icon>
+      Download backup
+    </button>
+    <small style="margin-top: 10px;">{{ lastBackupInfo }}</small>
+  </section>
+
+  <!-- Restore records -->
+  <section class="panel toolpanel">
+    <span class="iconbox tint1">
+      <app-icon name="Upload" [size]="20"></app-icon>
+    </span>
+    <h2>Restore records</h2>
+    <p>
+      Choose a Simran Physiotherapy backup from this or another device.
+      Older backups (before packages and payments) work too. You can review
+      record counts before replacing your workspace.
+    </p>
+    <button class="secondary" (click)="fileInput.click()">
+      Choose backup file
+    </button>
+    <input
+      #fileInput
+      type="file"
+      hidden
+      accept=".json,application/json"
+      (change)="onFileSelected($event)"
+    />
+  </section>
+
+  <!-- Offline access -->
+  <section class="panel toolpanel">
+    <app-icon name="ShieldCheck" [size]="24"></app-icon>
+    <h2>Offline access</h2>
+    <p>
+      {{ isOfflineReady ? 'This workspace is cached for offline use.' : 'Open this workspace online once in a supported browser to prepare offline access.' }}
+      Use the same browser and a locked, encrypted device. Clearing site
+      data removes local records.
+    </p>
+  </section>
+
+  <!-- Sample workspace reset -->
+  <section *ngIf="clinic.demo" class="panel toolpanel">
+    <app-icon name="Stethoscope" [size]="24"></app-icon>
+    <h2>Sample workspace</h2>
+    <p>
+      Start with an empty register before entering real patient
+      information. This removes all records currently on this device,
+      including sample packages and payments.
+    </p>
+    <button class="secondary" (click)="resetWorkspace()">
+      Start a clean workspace
+    </button>
+  </section>
+</div>

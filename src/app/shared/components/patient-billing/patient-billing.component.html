@@ -1,0 +1,85 @@
+<div *ngIf="clinic && patient">
+  <h3>Packages</h3>
+  <div class="pkgcard" *ngFor="let a of assignedPackages">
+    <div class="pkgtop">
+      <b>{{ a.name }}</b>
+      <span [class]="'badge ' + getBadgeClass(a)">
+        {{ getBadgeText(a) }}
+      </span>
+    </div>
+
+    <div class="meter" role="img" [attr.aria-label]="getMeterLabel(a)">
+      <i [style.width.%]="getMeterPercentage(a)"></i>
+    </div>
+
+    <small>
+      <b class="remain">Remaining: {{ getLeftSessions(a) }} of {{ a.sessions }}</b> ·
+      {{ getUsedSessions(a) }} attended ·
+      {{ formatMoney(a.rate) }} per session
+    </small>
+    <small>
+      Package total {{ formatMoney(a.sessions * a.rate) }} ·
+      Paid towards it {{ formatMoney(getPaidTowards(a.id)) }} ·
+      Started {{ formatDate(a.date) }}
+    </small>
+
+    <button
+      *ngIf="getUsedSessions(a) === 0"
+      class="link"
+      (click)="removePackage.emit(a)"
+    >
+      <app-icon name="Trash2" [size]="13"></app-icon>
+      Remove package
+    </button>
+  </div>
+
+  <p *ngIf="assignedPackages.length === 0">
+    No package assigned. Walk-in visits are billed per visit.
+  </p>
+
+  <div class="buttons">
+    <button class="secondary" (click)="assignPackage.emit()">
+      <app-icon name="Package" [size]="15"></app-icon>
+      Assign package
+    </button>
+  </div>
+
+  <h3 class="gap">Billing summary</h3>
+  <div class="sumgrid">
+    <div>
+      <small>Billed</small>
+      <b>{{ formatMoney(patientBilled) }}</b>
+    </div>
+    <div>
+      <small>Received</small>
+      <b>{{ formatMoney(patientReceived) }}</b>
+    </div>
+    <div>
+      <small>{{ patientBal < -0.004 ? 'Advance' : 'Balance due' }}</small>
+      <b [class.owe]="patientBal > 0.004" [class.adv]="patientBal < -0.004">
+        {{ formatMoney(absBalance) }}
+      </b>
+    </div>
+  </div>
+
+  <h3 class="gap">Payments</h3>
+  <button
+    class="history"
+    *ngFor="let p of patientPayments"
+    (click)="editPayment.emit(p)"
+  >
+    {{ formatDate(p.date) }} · {{ formatMoney(p.amount) }} · {{ p.mode }}
+    {{ getPaymentPackageName(p) }}
+    <app-icon name="ChevronRight" [size]="14"></app-icon>
+  </button>
+
+  <p *ngIf="patientPayments.length === 0">No payments recorded.</p>
+
+  <div class="buttons">
+    <button class="secondary" (click)="editPayment.emit(undefined)">
+      <app-icon name="Plus" [size]="15"></app-icon>
+      Record payment
+    </button>
+  </div>
+</div>
+

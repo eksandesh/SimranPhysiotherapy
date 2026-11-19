@@ -1,0 +1,101 @@
+<form (ngSubmit)="submit()" *ngIf="clinic">
+  <div class="fields">
+    <label>
+      Patient
+      <select
+        name="patient"
+        [(ngModel)]="patientId"
+        [disabled]="isEdit"
+        required
+      >
+        <option value="" disabled>Select a patient</option>
+        <option *ngFor="let pt of clinic.patients" [value]="pt.id">
+          {{ pt.name }} · {{ pt.id }}
+        </option>
+      </select>
+    </label>
+
+    <div *ngIf="patientId" class="calc">
+      {{ calculatedBalText }} <b>{{ formatMoney(absBal) }}</b>
+    </div>
+
+    <div class="pair">
+      <label>
+        Amount received (₹)
+        <input
+          name="amount"
+          type="number"
+          min="0.01"
+          step="0.01"
+          required
+          autoFocus
+          [(ngModel)]="amount"
+        />
+      </label>
+      <label>
+        Date
+        <input
+          name="date"
+          type="date"
+          required
+          [(ngModel)]="date"
+        />
+      </label>
+    </div>
+
+    <div class="pair">
+      <label>
+        Payment mode
+        <select name="mode" [(ngModel)]="mode">
+          <option *ngFor="let m of modes" [value]="m">{{ m }}</option>
+        </select>
+      </label>
+      <label>
+        Towards
+        <select name="pp" [(ngModel)]="pp">
+          <option value="">General / visit fee</option>
+          <option *ngFor="let a of availablePacks" [value]="a.id">
+            {{ a.name }} · {{ formatDate(a.date) }}
+          </option>
+        </select>
+      </label>
+    </div>
+
+    <label>
+      Note
+      <input
+        name="note"
+        maxlength="120"
+        [(ngModel)]="note"
+        placeholder="Optional"
+      />
+    </label>
+  </div>
+
+  <div *ngIf="error" role="alert" class="formerr">{{ error }}</div>
+
+  <div class="buttons formend">
+    <button class="primary" type="submit">
+      {{ isEdit ? 'Save changes' : 'Save payment' }}
+    </button>
+    <button
+      *ngIf="isEdit"
+      type="button"
+      class="secondary"
+      (click)="onPrint()"
+    >
+      <app-icon name="Printer" [size]="15"></app-icon>
+      Receipt
+    </button>
+    <button
+      *ngIf="isEdit"
+      type="button"
+      class="secondary"
+      (click)="deletePayment.emit(paymentData)"
+    >
+      <app-icon name="Trash2" [size]="15"></app-icon>
+      Delete
+    </button>
+  </div>
+</form>
+

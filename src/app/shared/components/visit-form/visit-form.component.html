@@ -1,0 +1,112 @@
+<form (ngSubmit)="submit()" *ngIf="clinic">
+  <div class="fields">
+    <label>
+      Patient
+      <select
+        name="patient"
+        [(ngModel)]="patientId"
+        (ngModelChange)="onPatientChange($event)"
+        required
+      >
+        <option value="" disabled>Select a patient</option>
+        <option *ngFor="let p of clinic.patients" [value]="p.id">
+          {{ p.name }} · {{ p.id }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Package
+      <select name="pp" [(ngModel)]="pp" (ngModelChange)="err = ''">
+        <option value="">Walk-in (pay per visit)</option>
+        <option *ngFor="let a of availablePacks" [value]="a.id">
+          {{ a.name }} · {{ getRemainingSessions(a) }} left
+        </option>
+      </select>
+    </label>
+
+    <div class="pair">
+      <label>
+        Date
+        <input name="date" type="date" required [(ngModel)]="visitDate" />
+      </label>
+      <label>
+        Time
+        <input name="time" type="time" required [(ngModel)]="visitTime" />
+      </label>
+    </div>
+
+    <label>
+      Session status
+      <select name="status" [(ngModel)]="sessionStatus" (ngModelChange)="err = ''">
+        <option value="Scheduled">Scheduled</option>
+        <option value="Completed">Completed</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+    </label>
+
+    <!-- Warning when patient has packages but none with remaining sessions -->
+    <div *ngIf="!selectedPack && hasAssignedPacks && availablePacks.length === 0" class="calc warn">
+      This patient has no sessions left on their package, so this visit will be billed as a walk-in. Assign a new package from the patient record to continue a pack.
+    </div>
+
+    <!-- Session calc when package selected -->
+    <div *ngIf="selectedPack" class="calc">
+      {{ formatSessionInfo() }}
+    </div>
+
+    <!-- Walk-in fee input when no package selected -->
+    <label *ngIf="!selectedPack">
+      Fee for this visit (₹)
+      <input
+        name="fee"
+        type="number"
+        min="0"
+        step="0.01"
+        placeholder="Walk-in fee"
+        [(ngModel)]="fee"
+      />
+    </label>
+
+    <div class="pair">
+      <label>
+        {{ isEdit ? 'Add payment received (₹)' : 'Payment received now (₹)' }}
+        <input
+          name="received"
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder="Optional"
+          [(ngModel)]="receivedAmount"
+        />
+      </label>
+      <label>
+        Mode
+        <select name="mode" [(ngModel)]="mode">
+          <option *ngFor="let m of modes" [value]="m">{{ m }}</option>
+        </select>
+      </label>
+    </div>
+
+    <label>
+      Session notes
+      <textarea name="notes" rows="3" [(ngModel)]="notes"></textarea>
+    </label>
+  </div>
+
+  <div *ngIf="err" role="alert" class="formerr">{{ err }}</div>
+
+  <div class="buttons formend">
+    <button class="primary" type="submit">Save appointment</button>
+    <button
+      *ngIf="isEdit"
+      type="button"
+      class="secondary"
+      (click)="deleteVisit.emit(visitData)"
+    >
+      <app-icon name="Trash2" [size]="15"></app-icon>
+      Delete
+    </button>
+  </div>
+</form>
+

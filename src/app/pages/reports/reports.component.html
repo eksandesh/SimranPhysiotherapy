@@ -1,0 +1,30 @@
+<section class="panel toolpanel" *ngIf="clinic">
+  <span class="iconbox tint0">
+    <app-icon name="FileText" [size]="20"></app-icon>
+  </span>
+  <h2>Download a clinic report</h2>
+  <p>Export a spreadsheet from the records saved on this device.</p>
+
+  <div class="fields">
+    <label>
+      Report type
+      <select [(ngModel)]="selectedKind">
+        <option *ngFor="let k of reportTypes" [value]="k">{{ k }}</option>
+      </select>
+    </label>
+    <label>
+      Patient
+      <select [(ngModel)]="selectedPatientId">
+        <option value="">All patients</option>
+        <option *ngFor="let p of clinic.patients" [value]="p.id">
+          {{ p.name }} · {{ p.id }}
+        </option>
+      </select>
+    </label>
+  </div>
+
+  <button class="primary formend" (click)="downloadCsv()">
+    <app-icon name="Download" [size]="16"></app-icon>
+    Download CSV
+  </button>
+</section>

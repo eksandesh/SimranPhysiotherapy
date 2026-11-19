@@ -1,0 +1,126 @@
+<div *ngIf="clinic">
+  <!-- Hero -->
+  <div class="hero">
+    <div class="herotext">
+      <span class="eyebrow heroeyebrow"><i></i> CLINIC OVERVIEW</span>
+      <h1>Welcome back, Dr. Simran</h1>
+      <p>Here’s what’s happening at your clinic today.</p>
+    </div>
+    <img class="heroart" src="assets/therapy.png" alt="Physiotherapy art" />
+  </div>
+
+  <!-- Section Title -->
+  <div class="sectiontitle">
+    <h2>Practice overview</h2>
+    <span><i></i> Live overview</span>
+  </div>
+
+  <!-- Practice Stats -->
+  <div class="statgrid">
+    <div class="stat" *ngFor="let s of practiceStats">
+      <div class="statline">
+        <span>{{ s.label }}</span>
+        <em [class]="'iconbox ' + s.colorClass">
+          <app-icon [name]="s.icon" [size]="19"></app-icon>
+        </em>
+      </div>
+      <strong>{{ s.value }}</strong>
+      <small>{{ s.sub }}</small>
+    </div>
+  </div>
+
+  <!-- Financial & Package Stats -->
+  <div class="statgrid" style="margin-top: 15px;">
+    <div class="stat" *ngFor="let s of moneyStats">
+      <div class="statline">
+        <span>{{ s.label }}</span>
+        <em [class]="'iconbox ' + s.colorClass">
+          <app-icon [name]="s.icon" [size]="19"></app-icon>
+        </em>
+      </div>
+      <strong>{{ s.value }}</strong>
+      <small>{{ s.sub }}</small>
+    </div>
+  </div>
+
+  <!-- Dashgrid -->
+  <div class="dashgrid">
+    <app-patient-list
+      [clinic]="clinic"
+      [patients]="clinic.patients.slice(0, 5)"
+      [showMore]="true"
+      (pick)="viewPatient($event)"
+      (more)="goToPatients()"
+    ></app-patient-list>
+
+    <div class="rightstack">
+      <!-- Quick actions -->
+      <section class="panel actions">
+        <div class="panelhead">
+          <h2>Quick actions</h2>
+        </div>
+        <button class="act" (click)="openModal('add')">
+          <span class="iconbox"><app-icon name="UserRoundPlus" [size]="19"></app-icon></span>
+          <span><b>Add patient</b><small>Create a patient record</small></span>
+          <app-icon name="ChevronRight" [size]="15"></app-icon>
+        </button>
+        <button class="act" (click)="openModal('book')">
+          <span class="iconbox"><app-icon name="CalendarCheck" [size]="19"></app-icon></span>
+          <span><b>Book appointment</b><small>Schedule a clinic visit</small></span>
+          <app-icon name="ChevronRight" [size]="15"></app-icon>
+        </button>
+        <button class="act" (click)="openModal('pay')">
+          <span class="iconbox"><app-icon name="IndianRupee" [size]="19"></app-icon></span>
+          <span><b>Record payment</b><small>Log an amount received</small></span>
+          <app-icon name="ChevronRight" [size]="15"></app-icon>
+        </button>
+        <button class="act" (click)="goToReports()">
+          <span class="iconbox"><app-icon name="FileDown" [size]="19"></app-icon></span>
+          <span><b>Download report</b><small>Export your clinic data</small></span>
+          <app-icon name="ChevronRight" [size]="15"></app-icon>
+        </button>
+      </section>
+
+      <!-- Needs attention -->
+      <section *ngIf="needsAttention.length > 0" class="panel actions">
+        <div class="panelhead">
+          <h2>Needs attention</h2>
+        </div>
+        <button
+          class="act"
+          *ngFor="let item of needsAttention.slice(0, 5)"
+          (click)="viewPatient(item.p)"
+        >
+          <span class="iconbox tint4">
+            <app-icon name="AlertCircle" [size]="19"></app-icon>
+          </span>
+          <span>
+            <b>{{ item.p.name }}</b>
+            <small>{{ formatAttentionSubtitle(item) }}</small>
+          </span>
+          <app-icon name="ChevronRight" [size]="15"></app-icon>
+        </button>
+      </section>
+
+      <!-- Local storage card -->
+      <section class="localcard">
+        <div>
+          <app-icon name="ShieldCheck" [size]="21"></app-icon>
+          <h3>Offline workspace</h3>
+        </div>
+        <p>Your records stay on this device. No internet connection needed for daily work.</p>
+        <button class="link" (click)="goToBackup()">
+          Manage backups <app-icon name="ArrowRight" [size]="14"></app-icon>
+        </button>
+      </section>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <app-icon name="HardDrive" [size]="14"></app-icon>
+    Local storage <span>·</span>
+    {{ clinic.demo ? 'Sample workspace' : 'Clinic workspace' }}
+    <span class="footbrand">Simran Physiotherapy</span>
+  </footer>
+</div>
